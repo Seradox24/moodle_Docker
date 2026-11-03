@@ -61,6 +61,10 @@ $CFG->timezone = env_value('TZ', 'UTC');
 $CFG->debug = 0;
 $CFG->debugdisplay = false;
 
+// Moodle 5.3 only allows hiding the promotional cards on Administration >
+// Notifications from config.php; keep them hidden on every installation.
+$CFG->disablenotificationctas = ['marketplace', 'moodlecloud', 'partners', 'feedback'];
+
 if (env_bool('MOODLE_REDIS_SESSIONS', true)) {
     $CFG->session_handler_class = '\core\session\redis';
     $CFG->session_redis_host = env_value('MOODLE_REDIS_HOST', 'redis');
