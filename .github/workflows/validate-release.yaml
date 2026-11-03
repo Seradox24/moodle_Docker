@@ -17,5 +17,6 @@ jobs:
           find scripts docker -name '*.sh' -print0 | xargs -0 -n 1 sh -n
           env -u TZ python3 tests/profiles.py
           python3 tests/backup-retention.py
+          python3 tests/plugin-bundle.py
       - name: Fresh installation, operation and recovery
         run: env -u TZ python3 tests/release-integration.py
