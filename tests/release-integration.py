@@ -135,6 +135,11 @@ try {
         compose(profiles[0], 'exec', '-T', '--user', 'www-data', 'app', 'php', '/dev/stdin',
                 data=(ROOT/'tests/normal-operations.php').read_bytes())
         fixture(profiles[0], 'seed')
+        compose(profiles[0], 'exec', '-T', '--user', 'www-data',
+                '-e', 'COMPOSE_TEST_PROJECT='+names[0], 'app', 'php', '/dev/stdin',
+                data=(ROOT/'tests/customcert-functional.php').read_bytes())
+        run(['python3', ROOT/'scripts/install-plugins.py', '--env-file', profiles[0]])
+        run(['python3', ROOT/'tests/plugin-rejections.py', '--env-file', profiles[0]])
         login(28881, password)
         compose(profiles[0], 'exec', '-T', '--user', 'www-data', 'app',
                 'php', 'admin/cli/cron.php', '--keep-alive=0')
@@ -170,6 +175,9 @@ try {
         print('Different restore release rejected.', flush=True)
         run(['sh', 'scripts/restore.sh', '--env-file', profiles[1], '--backup', backup])
         fixture(profiles[1], 'verify')
+        compose(profiles[1], 'exec', '-T', '--user', 'www-data',
+                '-e', 'COMPOSE_TEST_PROJECT='+names[1], 'app', 'php', '/dev/stdin',
+                data=(ROOT/'tests/customcert-functional.php').read_bytes())
         login(28882, password)
         try:
             request = urllib.request.Request('http://127.0.0.1:28882/api/rest/v2/openapi.json',

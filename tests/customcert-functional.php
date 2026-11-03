@@ -1,13 +1,16 @@
 <?php
 // Run as www-data through app stdin after installing mod_customcert.
 define('CLI_SCRIPT', true);
+if (!str_starts_with(getenv('COMPOSE_TEST_PROJECT') ?: '', 'release-check-')) {
+    throw new RuntimeException('This fixture is restricted to disposable release-check projects.');
+}
 require '/var/www/moodle/config.php';
 require_once($CFG->dirroot . '/user/lib.php');
 require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/course/modlib.php');
 
-if (get_config('mod_customcert', 'version') != 2026042005) {
-    throw new RuntimeException('mod_customcert 2026042005 is required for this test.');
+if (get_config('mod_customcert', 'version') != 2026100504) {
+    throw new RuntimeException('Locked mod_customcert 5.3.4 is required for this test.');
 }
 
 \core\session\manager::set_user(get_admin());
@@ -24,8 +27,13 @@ try {
         'fullname' => 'Prueba temporal de certificado',
         'shortname' => $token,
         'format' => 'topics',
+        'enablecompletion' => 1,
     ]);
     $courseid = $course->id;
+    $PAGE->set_course($course);
+    $PAGE->set_context(context_course::instance($courseid));
+    $PAGE->set_url('/course/view.php', ['id' => $courseid]);
+    $PAGE->set_pagelayout('course');
 
     $user = (object)[
         'username' => $token,
@@ -51,6 +59,7 @@ try {
     $data->emailstudents = 0;
     $data->emailteachers = 0;
     $data->emailothers = '';
+    $data->completion = COMPLETION_TRACKING_MANUAL;
     $activity = add_moduleinfo($data, $course);
     $certificateid = (int)$activity->instance;
     $cm = get_coursemodule_from_instance('customcert', $certificateid, $courseid, false, MUST_EXIST);
@@ -96,6 +105,26 @@ try {
         throw new RuntimeException('Generated certificate is not a complete PDF.');
     }
     echo 'Certificate PDF generated (' . strlen($pdf) . ' bytes, SHA-256 ' . hash('sha256', $pdf) . ")\n";
+
+    // Exercise the progress block against a real course with a tracked activity.
+    $PAGE->blocks->add_block('completion_progress', 'side-pre', 0, false);
+    $record = $DB->get_record('block_instances', [
+        'blockname' => 'completion_progress', 'parentcontextid' => context_course::instance($courseid)->id,
+    ], '*', MUST_EXIST);
+    $block = block_instance('completion_progress', $record, $PAGE);
+    $student = $DB->get_record('user', ['id' => $userid], '*', MUST_EXIST);
+    $progress = (new \block_completion_progress\completion_progress($course))
+        ->for_user($student)->for_block_instance($record);
+    if (!$progress->has_visible_activities() || $progress->get_percentage() !== 0)
+        throw new RuntimeException('Progress should start at zero with a visible tracked activity');
+    (new completion_info($course))->update_state($cm, COMPLETION_COMPLETE, $userid);
+    $progress = (new \block_completion_progress\completion_progress($course))
+        ->for_user($student)->for_block_instance($record);
+    if ($progress->get_percentage() !== 100)
+        throw new RuntimeException('Completed tracked activity did not produce 100 percent progress');
+    $content = $block->get_content();
+    if (!$content || empty($content->text)) throw new RuntimeException('Progress block rendered no content');
+    echo "Completion Progress block rendered and student progress changed from 0 to 100 percent\n";
 } finally {
     if ($courseid !== null) {
         delete_course($courseid, false);

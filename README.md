@@ -164,6 +164,15 @@ El workflow `Validate release` comprueba perfiles e instalación, operación,
 reinicio, respaldo y restauración en proyectos desechables de Linux. No publica
 imágenes ni despliega servicios. Los plugins externos requieren validación propia.
 
+## Paquete reproducible de plugins
+
+Las instalaciones nuevas incorporan al finalizar Completion Progress y Custom
+Certificate, fijados para Moodle 5.3. Para omitirlos, usar `--plugins none` en
+`install.sh`. El [catálogo y procedimiento de actualización](plugins/README.md)
+incluye los ZIP oficiales, checksums y un instalador offline para sitios nuevos
+o existentes. Los tres candidatos sin soporte 5.3 declarado quedan separados
+del conjunto predeterminado. No se crean cursos, certificados ni integraciones.
+
 ## Respaldo periódico y ensayo de recuperación
 
 `python3 scripts/backup-retained.py --env-file /ruta/privada/instancia.env --destination /ruta/respaldos --keep 7`

@@ -214,6 +214,15 @@ de cambiar el proxy hacia el sitio recuperado.
 
 ## Instalar plugins desde Administración
 
+Para el paquete versionado, preferir el [procedimiento offline](plugins/README.md):
+`python3 scripts/install-plugins.py --env-file /ruta/privada/sitio.env --set supported`.
+Requiere ensayo aislado y respaldo previo. Las instalaciones nuevas lo ejecutan
+al finalizar; `install.sh --plugins none` permite instalar solo el núcleo. La
+escritura se limita a un contenedor efímero durante mantenimiento, sin publicar
+un servicio web con escritura. Las actualizaciones son explícitas con `--upgrade`,
+después de actualizar y revisar el catálogo; no ocurren por ejecutar `git pull`.
+El procedimiento web siguiente se conserva para otros plugins revisados.
+
 En operación normal `app`, `web` y `cron` leen `moodle-code` sin permiso de
 escritura. Para instalar un plugin compatible con Moodle 5.3.0, probarlo primero
 en desarrollo y respaldar base, `moodledata` y código. Abrir la ventana solo el
