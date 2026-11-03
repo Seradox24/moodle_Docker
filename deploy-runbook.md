@@ -2,7 +2,7 @@
 
 ## Alcance de la línea 5.3 LTS
 
-El instalador 1.1.0 fija Moodle 5.3.0 y PostgreSQL 17.11. Requiere PHP 8.3
+El instalador 1.1.1 fija Moodle 5.3.0 y PostgreSQL 17.11. Requiere PHP 8.3
 o superior compatible y PostgreSQL 17 como mínimo. Esta guía instala en un
 proyecto nuevo con volúmenes vacíos; no migra instalaciones 5.2.4/PostgreSQL 16.
 No iniciar PostgreSQL 17 sobre el volumen de PostgreSQL 16. No sustituir el
@@ -13,7 +13,11 @@ con respaldo y retorno. La restauración incluida solo acepta la misma release.
 Para reproducir la base anterior, usar el tag
 `moodle-5.2.4-launcher-1.0.7` o la rama `moodle-5.2.4` del mismo repositorio.
 Para una instalación reproducible de 5.3, seleccionar el tag
-`moodle-5.3.0-launcher-1.1.0` cuando esté publicado; `main` puede avanzar.
+`moodle-5.3.0-launcher-1.1.1` cuando esté publicado; `main` puede avanzar.
+La 1.1.1 conserva Moodle 5.3.0 y solo cambia `config/config.php`: oculta las
+tarjetas promocionales de Administración > Notificaciones (Marketplace,
+MoodleCloud, proveedores de servicios y encuesta), que Moodle 5.3 solo permite
+desactivar en `config.php`.
 
 Este repositorio contiene el despliegue Docker de Moodle en Linux. `main` contiene la
 base validada para pseudoproducción. Las versiones de Moodle y de las imágenes
@@ -155,6 +159,28 @@ los tres volúmenes y la configuración de base de datos de una instalación
 existente. Cambiar la contraseña de PostgreSQL solo en `.env` no cambia la
 contraseña del rol almacenada en la base.
 
+## Actualizar el instalador sin cambiar Moodle
+
+Aplica a releases que conservan `MOODLE_VERSION` y `MOODLE_GIT_REF`, como
+1.1.0 → 1.1.1. `code-init` acepta el volumen `moodle-code` existente porque la
+revisión de Moodle no cambia; si cambia, es una actualización de Moodle y requiere
+su propio procedimiento. Desde el clon, con el perfil de la instalación:
+
+```bash
+sh ./scripts/backup.sh --env-file /ruta/privada/instancia.env /ruta/respaldos/antes-de-la-release
+git fetch --tags origin
+git checkout --detach moodle-5.3.0-launcher-1.1.1
+sh ./scripts/compose.sh --env-file /ruta/privada/instancia.env build app web
+sh ./scripts/start.sh --env-file /ruta/privada/instancia.env
+sh ./scripts/compose.sh --env-file /ruta/privada/instancia.env exec -T --user www-data app php /usr/local/bin/check-runtime.php
+sh ./scripts/compose.sh --env-file /ruta/privada/instancia.env exec -T --user www-data app php /var/www/moodle/admin/cli/purge_caches.php
+sh ./scripts/smoke-test.sh --env-file /ruta/privada/instancia.env
+```
+
+Las imágenes de la release anterior permanecen en el servidor. Para volver,
+seleccionar el tag anterior y repetir `start.sh`. Los respaldos tomados con una
+release se restauran con esa misma release.
+
 ## Respaldo y recuperación
 
 En una ventana de mantenimiento, con los servicios activos:
@@ -241,7 +267,7 @@ Ejemplo de respaldo externo: `sh scripts/backup.sh --env-file /ruta/privada/inst
 El respaldo no contiene el perfil privado. Conservarlo protegido por separado.
 Los tres volúmenes siguen gestionados por Docker; no se requieren bind mounts.
 
-El instalador 1.1.0 utiliza Moodle 5.3.0 LTS, PHP 8.3.36 y PostgreSQL 17.11,
+El instalador 1.1.1 utiliza Moodle 5.3.0 LTS, PHP 8.3.36 y PostgreSQL 17.11,
 con referencias fijadas por SHA/digest. La construcción instala las
 dependencias Composer bloqueadas de Moodle (necesarias para la API REST y
 OpenAPI) con `COMPOSER_IMAGE`; requiere acceso a Packagist/GitHub al construir.

@@ -138,7 +138,7 @@ Ejemplo de respaldo externo: `sh scripts/backup.sh --env-file /ruta/privada/inst
 El respaldo no contiene el perfil privado. Conservarlo protegido por separado.
 Los tres volúmenes siguen gestionados por Docker; no se requieren bind mounts.
 
-La release del instalador 1.1.0 utiliza Moodle 5.3.0 LTS, PHP 8.3.36 y
+La release del instalador 1.1.1 utiliza Moodle 5.3.0 LTS, PHP 8.3.36 y
 PostgreSQL 17.11, con referencias fijadas por SHA/digest. Moodle 5.3 requiere
 PHP 8.3 y PostgreSQL 17 como mínimo. Véanse los
 [requisitos oficiales](https://moodledev.io/general/releases/5.3).
