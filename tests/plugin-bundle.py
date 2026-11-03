@@ -17,8 +17,10 @@ spec.loader.exec_module(module)
 
 class BundleTests(unittest.TestCase):
     def test_locked_distribution(self):
-        self.assertEqual(len(module.bundle('supported')[0]), 2)
-        self.assertEqual(len(module.bundle('extended')[0]), 5)
+        plugins, _ = module.bundle('supported')
+        self.assertEqual([p['component'] for p in plugins], ['block_completion_progress', 'mod_certstudio'])
+        self.assertEqual(set((ROOT/'plugins/archives').glob('*.zip')),
+                         {ROOT/'plugins'/p['archive'] for p in plugins})
 
     def invalid(self, *, member=None, symlink=False, mutation=None):
         with tempfile.TemporaryDirectory() as directory:

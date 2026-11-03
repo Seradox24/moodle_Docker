@@ -1,5 +1,5 @@
 <?php
-// Run as www-data through app stdin after installing mod_customcert.
+// Run as www-data through app stdin after installing mod_certstudio.
 define('CLI_SCRIPT', true);
 if (!str_starts_with(getenv('COMPOSE_TEST_PROJECT') ?: '', 'release-check-')) {
     throw new RuntimeException('This fixture is restricted to disposable release-check projects.');
@@ -9,8 +9,8 @@ require_once($CFG->dirroot . '/user/lib.php');
 require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/course/modlib.php');
 
-if (get_config('mod_customcert', 'version') != 2026100504) {
-    throw new RuntimeException('Locked mod_customcert 5.3.4 is required for this test.');
+if (get_config('mod_certstudio', 'version') != 2026100901) {
+    throw new RuntimeException('Locked mod_certstudio 1.0.1 is required for this test.');
 }
 
 \core\session\manager::set_user(get_admin());
@@ -51,55 +51,24 @@ try {
     $studentroleid = $DB->get_field('role', 'id', ['shortname' => 'student'], MUST_EXIST);
     $manual->enrol_user($enrolinstance, $userid, $studentroleid);
 
-    [, , , , $data] = prepare_new_moduleinfo_data($course, 'customcert', 0);
+    [, , , , $data] = prepare_new_moduleinfo_data($course, 'certstudio', 0);
     $data->name = 'Certificado temporal';
     $data->intro = 'Prueba funcional del plugin';
     $data->introformat = FORMAT_HTML;
-    $data->deliveryoption = 'I';
-    $data->emailstudents = 0;
-    $data->emailteachers = 0;
-    $data->emailothers = '';
     $data->completion = COMPLETION_TRACKING_MANUAL;
     $activity = add_moduleinfo($data, $course);
     $certificateid = (int)$activity->instance;
-    $cm = get_coursemodule_from_instance('customcert', $certificateid, $courseid, false, MUST_EXIST);
-    $certificate = $DB->get_record('customcert', ['id' => $certificateid], '*', MUST_EXIST);
-    echo "Course, student enrolment and custom certificate activity created (cmid {$cm->id})\n";
+    $cm = get_coursemodule_from_instance('certstudio', $certificateid, $courseid, false, MUST_EXIST);
+    $context = context_module::instance($cm->id);
+    $templateid = \mod_certstudio\template::create('Temporary certificate', $context->id);
+    $DB->set_field('certstudio', 'templateid', $templateid, ['id' => $certificateid]);
 
-    $page = $DB->get_record('customcert_pages', ['templateid' => $certificate->templateid], '*', MUST_EXIST);
-    $DB->insert_record('customcert_elements', (object)[
-        'pageid' => $page->id,
-        'element' => 'text',
-        'name' => 'Test text',
-        'sequence' => 1,
-        'posx' => 10,
-        'posy' => 10,
-        'refpoint' => 0,
-        'alignment' => 'L',
-        'timecreated' => time(),
-        'timemodified' => time(),
-        'data' => json_encode([
-            'text' => 'Certificado de prueba',
-            'font' => 'helvetica',
-            'fontsize' => 18,
-            'colour' => '#000000',
-            'width' => 0,
-        ]),
-    ]);
-
-    $issueid = \mod_customcert\service\certificate_issue_service::create()
-        ->issue_certificate($certificateid, $userid);
-    $issue = $DB->get_record('customcert_issues', ['id' => $issueid], '*', MUST_EXIST);
-    if ((int)$issue->customcertid !== $certificateid || (int)$issue->userid !== $userid || !$issue->code) {
+    $issueid = \mod_certstudio\certificate::issue($certificateid, $userid, false);
+    $issue = \mod_certstudio\certificate::get_issue($issueid);
+    if (!$issue || (int)$issue->certstudioid !== $certificateid || (int)$issue->userid !== $userid || !$issue->code) {
         throw new RuntimeException('Certificate issue record is incomplete.');
     }
-    echo "Certificate issued with verification code\n";
-
-    $template = \mod_customcert\template::from_record(
-        (new \mod_customcert\service\template_repository())->get_by_id_or_fail((int)$certificate->templateid)
-    );
-    $pdf = \mod_customcert\service\pdf_generation_service::create()
-        ->generate_pdf($template, false, $userid, true);
+    $pdf = \mod_certstudio\pdfgenerator::generate(json_decode($issue->templatedata, false, 512, JSON_THROW_ON_ERROR));
     if (!is_string($pdf) || !str_starts_with($pdf, '%PDF-') || strlen($pdf) < 1000 ||
             !str_contains(substr($pdf, -100), '%%EOF')) {
         throw new RuntimeException('Generated certificate is not a complete PDF.');
@@ -131,10 +100,10 @@ try {
         if ($DB->record_exists('course', ['id' => $courseid])) {
             throw new RuntimeException('Temporary course was not removed.');
         }
-        if ($certificateid !== null && $DB->record_exists('customcert', ['id' => $certificateid])) {
+        if ($certificateid !== null && $DB->record_exists('certstudio', ['id' => $certificateid])) {
             throw new RuntimeException('Temporary certificate activity was not removed.');
         }
-        if ($issueid !== null && $DB->record_exists('customcert_issues', ['id' => $issueid])) {
+        if ($issueid !== null && $DB->record_exists('certstudio_issues', ['id' => $issueid])) {
             throw new RuntimeException('Temporary certificate issue was not removed.');
         }
     }

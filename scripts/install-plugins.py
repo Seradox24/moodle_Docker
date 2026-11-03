@@ -21,7 +21,7 @@ def bundle(selection):
     catalog = json.loads(CATALOG.read_text())
     if catalog['schema'] != 1 or catalog['moodle_version'] != '5.3.0':
         raise ValueError('Unsupported catalog schema or Moodle release')
-    chosen = [p for p in catalog['plugins'] if selection == 'extended' or p['selection'] == 'supported']
+    chosen = [p for p in catalog['plugins'] if p['selection'] == 'supported']
     versions = {p['component']: p['version'] for p in chosen}
     payload = io.BytesIO()
     with tarfile.open(fileobj=payload, mode='w') as out:
@@ -84,8 +84,7 @@ def run(args, data=None):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--env-file')
-    parser.add_argument('--set', choices=['supported', 'extended'], default='supported')
-    parser.add_argument('--acknowledge-unsupported', action='store_true')
+    parser.add_argument('--set', choices=['supported'], default='supported')
     parser.add_argument('--verify-only', action='store_true')
     parser.add_argument('--upgrade', action='store_true', help='Allow replacement of an intact previously managed plugin')
     args = parser.parse_args()
@@ -93,8 +92,6 @@ def main():
     print('Verified offline bundle: ' + ', '.join(p['component'] + '@' + str(p['version']) for p in plugins), flush=True)
     if args.verify_only and not args.env_file:
         return
-    if not args.verify_only and args.set == 'extended' and not args.acknowledge_unsupported:
-        parser.error('extended requires --acknowledge-unsupported; three plugins do not declare Moodle 5.3 support')
     if not args.env_file:
         parser.error('--env-file is required')
     profile = Path(args.env_file)

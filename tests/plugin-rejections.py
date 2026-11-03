@@ -68,9 +68,9 @@ try:
 finally:
     file_operation('mv ' + path + '.held-fixture.json ' + path + '.stt-plugin.json')
 try:
-    php("set_config('version', 2027100504, 'mod_customcert');")
+    php("set_config('version', 2027100901, 'mod_certstudio');")
     reject()
 finally:
-    php("set_config('version', 2026100504, 'mod_customcert');")
+    php("set_config('version', 2026100901, 'mod_certstudio');")
 unchanged()
 print('Missing profile, open permissions, unexpected files, unmanaged collision and downgrade rejected before maintenance; alternate working directory verified.')
