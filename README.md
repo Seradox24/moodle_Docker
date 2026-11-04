@@ -164,6 +164,17 @@ El workflow `Validate release` comprueba perfiles e instalación, operación,
 reinicio, respaldo y restauración en proyectos desechables de Linux. No publica
 imágenes ni despliega servicios. Los plugins externos requieren validación propia.
 
+
+## Integraciones de identidad y eventos
+
+[Keycloak OIDC Stack](https://github.com/Seradox24/keycloak-oidc-stack) configura
+el proveedor de identidad. El cliente confidencial `moodle` admite el retorno
+exacto `/auth/oidc/` del plugin de autenticación.
+
+[Moodle Logstore xAPI OIDC](https://github.com/Seradox24/moodle-logstore-xapi-oidc)
+envía eventos a un LRS con identidad OIDC. Su componente en Moodle es
+`logstore_xapi`. Ambas integraciones requieren configuración por instalación.
+
 ## Paquete reproducible de plugins
 
 Las instalaciones nuevas incorporan al finalizar Completion Progress y Custom

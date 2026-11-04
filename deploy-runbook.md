@@ -212,6 +212,17 @@ El procedimiento detallado y la evidencia del ensayo se conservan en la
 documentación operativa externa. Validar la base, los archivos y el acceso antes
 de cambiar el proxy hacia el sitio recuperado.
 
+
+## Integraciones de identidad y eventos
+
+[Keycloak OIDC Stack](https://github.com/Seradox24/keycloak-oidc-stack) configura
+el proveedor de identidad. El cliente confidencial `moodle` admite el retorno
+exacto `/auth/oidc/` del plugin de autenticación.
+
+[Moodle Logstore xAPI OIDC](https://github.com/Seradox24/moodle-logstore-xapi-oidc)
+envía eventos a un LRS con identidad OIDC. Su componente en Moodle es
+`logstore_xapi`. Ambas integraciones requieren configuración por instalación.
+
 ## Instalar plugins desde Administración
 
 Para el paquete versionado, preferir el [procedimiento offline](plugins/README.md):
