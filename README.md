@@ -172,17 +172,18 @@ el proveedor de identidad. El cliente confidencial `moodle` admite el retorno
 exacto `/auth/oidc/` del plugin de autenticación.
 
 [Moodle Logstore xAPI OIDC](https://github.com/Seradox24/moodle-logstore-xapi-oidc)
-envía eventos a un LRS con identidad OIDC. Su componente en Moodle es
-`logstore_xapi`. Ambas integraciones requieren configuración por instalación.
+envía eventos a un LRS con identidad OIDC. El paquete del componente
+`logstore_xapi` se instala de forma explícita con el
+[procedimiento opcional](plugins/README.md#logstore-xapi-oidc-opcional).
+Ambas integraciones requieren configuración por instalación.
 
 ## Paquete reproducible de plugins
 
-Las instalaciones nuevas incorporan al finalizar Completion Progress y Custom
-Certificate, fijados para Moodle 5.3. Para omitirlos, usar `--plugins none` en
+Las instalaciones nuevas incorporan al finalizar Completion Progress y Certificate
+Studio, fijados para Moodle 5.3. Para omitirlos, usar `--plugins none` en
 `install.sh`. El [catálogo y procedimiento de actualización](plugins/README.md)
 incluye los ZIP oficiales, checksums y un instalador offline para sitios nuevos
-o existentes. Los tres candidatos sin soporte 5.3 declarado quedan separados
-del conjunto predeterminado. No se crean cursos, certificados ni integraciones.
+o existentes.
 
 ## Respaldo periódico y ensayo de recuperación
 

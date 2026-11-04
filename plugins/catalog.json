@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "moodle_version": "5.3.0",
-  "bundle_version": "2026.11.03",
+  "bundle_version": "2026.11.03.2",
   "plugins": [
     {
       "component": "block_completion_progress",
@@ -19,65 +19,33 @@
       "dependencies": {}
     },
     {
-      "component": "mod_customcert",
-      "path": "mod/customcert",
-      "version": 2026100504,
-      "archive": "archives/mod_customcert-2026100504.zip",
-      "sha256": "12d880aadd427756792cbf7e32f80e77a3a73cd9af956824851ef2b6be16e623",
-      "source": "https://codeload.github.com/mdjnelson/moodle-mod_customcert/zip/e5542659ad9c78e2b3e6d38f5e443aeb8781f8d9",
-      "repository": "https://github.com/mdjnelson/moodle-mod_customcert",
-      "ref": "e5542659ad9c78e2b3e6d38f5e443aeb8781f8d9",
-      "tag": "v5.3.4",
+      "component": "mod_certstudio",
+      "path": "mod/certstudio",
+      "version": 2026100901,
+      "archive": "archives/mod_certstudio-2026100901.zip",
+      "sha256": "95f496296e2cc1b86829ee4d6a1a81a1f824edee2aa77a5893d61ba05e676cb8",
+      "source": "https://marketplace.moodle.com/plugins/mod_certstudio/versions",
+      "repository": "https://gitlab.com/letstudygroup/moodle-mod_certstudio",
       "selection": "supported",
       "license": "GPL-3.0-or-later",
-      "declared_moodle": "5.3",
+      "declared_moodle": "4.5-5.3",
       "dependencies": {}
-    },
+    }
+  ],
+  "optional_plugins": [
     {
-      "component": "tool_certificate",
-      "path": "admin/tool/certificate",
-      "version": 2026100600,
-      "archive": "archives/tool_certificate-2026100600.zip",
-      "sha256": "81c3fcf273cf86ac1ed5a9e3c7672737c4f595520b75653c9dfdcd5b5bd4a1a9",
-      "source": "https://codeload.github.com/moodleworkplace/moodle-tool_certificate/zip/48be6a13a75c8bdd14d49d92e04c3adb4c0ca3c7",
-      "repository": "https://github.com/moodleworkplace/moodle-tool_certificate",
-      "ref": "48be6a13a75c8bdd14d49d92e04c3adb4c0ca3c7",
-      "tag": "v5.0.11",
-      "selection": "extended",
+      "component": "logstore_xapi",
+      "path": "admin/tool/log/store/xapi",
+      "version": 2026110300,
+      "archive": "optional/logstore_xapi-5.1.1-oidc.1.zip",
+      "sha256": "932a4ae30cf5533b3d2e7ecb645faa965a06c455ca88c3b991f82734eb4c951d",
+      "source": "https://github.com/Seradox24/moodle-logstore-xapi-oidc/releases/download/v5.1.1-oidc.1/logstore_xapi-5.1.1-oidc.1.zip",
+      "repository": "https://github.com/Seradox24/moodle-logstore-xapi-oidc",
+      "ref": "07b9ffed85e8c10fe62a929c69e04db019fb5fb2",
+      "tag": "v5.1.1-oidc.1",
+      "selection": "xapi-oidc",
       "license": "GPL-3.0-or-later",
-      "declared_moodle": "5.0-5.2",
-      "dependencies": {}
-    },
-    {
-      "component": "mod_coursecertificate",
-      "path": "mod/coursecertificate",
-      "version": 2026100600,
-      "archive": "archives/mod_coursecertificate-2026100600.zip",
-      "sha256": "460da805d82c750b86a18f7fc8a9709b46c944fc578e52a472e44fd16a99f812",
-      "source": "https://codeload.github.com/moodleworkplace/moodle-mod_coursecertificate/zip/9b271a6444e2c26fd6c43e8c1f811669ca3409d5",
-      "repository": "https://github.com/moodleworkplace/moodle-mod_coursecertificate",
-      "ref": "9b271a6444e2c26fd6c43e8c1f811669ca3409d5",
-      "tag": "v5.0.11",
-      "selection": "extended",
-      "license": "GPL-3.0-or-later",
-      "declared_moodle": "5.0-5.2",
-      "dependencies": {
-        "tool_certificate": 2026100600
-      }
-    },
-    {
-      "component": "block_verify_certs",
-      "path": "blocks/verify_certs",
-      "version": 2024061800,
-      "archive": "archives/block_verify_certs-2024061800.zip",
-      "sha256": "17e6bc4e78472e83f32ef4c511e9dd398fb9e9f0cfb6d0bcdeeb63c455b4e491",
-      "source": "https://codeload.github.com/dmitriim/moodle-block_verify_certs/zip/772d4c81810d4839459f3082a523c7d717643aef",
-      "repository": "https://github.com/dmitriim/moodle-block_verify_certs",
-      "ref": "772d4c81810d4839459f3082a523c7d717643aef",
-      "tag": "2024061800",
-      "selection": "extended",
-      "license": "GPL-3.0-or-later",
-      "declared_moodle": "4.4",
+      "declared_moodle": "4.5-5.3",
       "dependencies": {}
     }
   ]

@@ -1,25 +1,13 @@
 # Plugins bloqueados para Moodle 5.3.0
 
 El paquete de plugins tiene ciclo propio (`bundle_version` en `catalog.json`).
-No cambia las imágenes ni la versión 1.1.1 del núcleo del instalador. Los ZIP
-originales proceden de commits oficiales inmutables; se conservan completos,
-con licencias, traducciones, recursos y pruebas. No se copian duplicados,
-perfiles, repositorios de desarrollo ni otras carpetas del equipo de origen.
-No necesita acceso a Internet ni una carpeta hermana para instalar los plugins.
+Los dos ZIP se conservan completos y se fijan por SHA-256. El catálogo registra
+su versión, soporte declarado y origen. La instalación de los plugins es offline.
 
-| Conjunto | Plugin | Versión | Soporte declarado |
-| --- | --- | --- | --- |
-| supported | block_completion_progress | 2026101200 | 4.5–5.3 |
-| supported | mod_customcert | 5.3.4 / 2026100504 | 5.3 |
-| extended | tool_certificate | 5.0.11 / 2026100600 | 5.0–5.2 |
-| extended | mod_coursecertificate | 5.0.11 / 2026100600 | 5.0–5.2 |
-| extended | block_verify_certs | 2024061800 | 4.4 |
-
-`extended` incluye también los dos plugins de `supported`. No equivale a
-compatibilidad garantizada. `coursecertificate` requiere `tool_certificate`
-2026100600. Ambos sistemas de certificados son independientes y pueden coexistir;
-este paquete no crea plantillas, bloques, cursos ni emisiones automáticas.
-No conecta Moodle con un LRS, OIDC ni SMTP.
+| Plugin | Versión | Soporte declarado |
+| --- | --- | --- |
+| block_completion_progress | 2026101200 | 4.5–5.3 |
+| mod_certstudio | 1.0.1 / 2026100901 | 4.5–5.3 |
 
 ## Instalar en Linux
 
@@ -36,13 +24,9 @@ para que no coincida con la ventana; el bloqueo de plugins serializa únicamente
 las ejecuciones de esta herramienta para el mismo perfil/proyecto.
 
 ```sh
-python3 scripts/install-plugins.py --verify-only --set extended
+python3 scripts/install-plugins.py --verify-only
 python3 scripts/install-plugins.py --env-file /ruta/privada/sitio.env --set supported
 ```
-
-Para ensayar los tres plugins sin soporte 5.3 declarado, usar un proyecto
-desechable y añadir `--set extended --acknowledge-unsupported`. No elegir ese
-conjunto en producción sin una decisión explícita y evidencia funcional.
 
 La herramienta verifica SHA-256, identidad/versión, dependencias y rutas de los
 ZIP antes de tocar servicios. Rechaza downgrade de base, colisiones con plugins
@@ -57,6 +41,27 @@ No revierte migraciones sustituyendo solo archivos. Registrar el error sin
 publicar salidas sensibles, recuperar el respaldo completo en otro proyecto
 según el runbook y comprobarlo antes de cambiar el proxy. Si no comenzó ninguna
 migración, revisar la causa y el estado de mantenimiento antes de reintentar.
+
+## Logstore xAPI OIDC opcional
+
+[Logstore xAPI OIDC](https://github.com/Seradox24/moodle-logstore-xapi-oidc)
+`5.1.1-oidc.1` (beta, compilación `2026110300`) está en
+`optional/logstore_xapi-5.1.1-oidc.1.zip`. Su origen, versión y SHA-256
+están fijados en `optional_plugins` del catálogo. El instalador automático
+sigue seleccionando únicamente Certificate Studio y Completion Progress.
+
+Aplicar el mismo procedimiento de respaldo y ensayo que para el conjunto
+principal. La instalación es explícita y no habilita el logstore.
+
+```sh
+python3 scripts/install-plugins.py --set xapi-oidc --verify-only
+python3 scripts/install-plugins.py --env-file /ruta/privada/sitio.env --set xapi-oidc
+```
+
+Para activarlo, configurar primero la autenticación OIDC de Moodle, el issuer
+y cliente previstos y las credenciales del LRS, según la guía del repositorio
+del plugin. Para actualizar su ZIP, conservarlo en `optional/`, fijar los
+metadatos de la nueva revisión y usar `--set xapi-oidc --upgrade`.
 
 ## Actualizar mediante Git
 

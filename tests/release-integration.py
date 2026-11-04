@@ -137,9 +137,14 @@ try {
         fixture(profiles[0], 'seed')
         compose(profiles[0], 'exec', '-T', '--user', 'www-data',
                 '-e', 'COMPOSE_TEST_PROJECT='+names[0], 'app', 'php', '/dev/stdin',
-                data=(ROOT/'tests/customcert-functional.php').read_bytes())
+                data=(ROOT/'tests/certstudio-functional.php').read_bytes())
         run(['python3', ROOT/'scripts/install-plugins.py', '--env-file', profiles[0]])
         run(['python3', ROOT/'tests/plugin-rejections.py', '--env-file', profiles[0]])
+        # Verify the optional archive separately after the default bundle has installed.
+        compose(profiles[0], 'exec', '-T', 'app', 'test', '!', '-e',
+                '/var/www/moodle/public/admin/tool/log/store/xapi')
+        run(['python3', ROOT/'scripts/install-plugins.py', '--env-file', profiles[0],
+             '--set', 'xapi-oidc'])
         login(28881, password)
         compose(profiles[0], 'exec', '-T', '--user', 'www-data', 'app',
                 'php', 'admin/cli/cron.php', '--keep-alive=0')
@@ -177,7 +182,7 @@ try {
         fixture(profiles[1], 'verify')
         compose(profiles[1], 'exec', '-T', '--user', 'www-data',
                 '-e', 'COMPOSE_TEST_PROJECT='+names[1], 'app', 'php', '/dev/stdin',
-                data=(ROOT/'tests/customcert-functional.php').read_bytes())
+                data=(ROOT/'tests/certstudio-functional.php').read_bytes())
         login(28882, password)
         try:
             request = urllib.request.Request('http://127.0.0.1:28882/api/rest/v2/openapi.json',
