@@ -140,6 +140,11 @@ try {
                 data=(ROOT/'tests/certstudio-functional.php').read_bytes())
         run(['python3', ROOT/'scripts/install-plugins.py', '--env-file', profiles[0]])
         run(['python3', ROOT/'tests/plugin-rejections.py', '--env-file', profiles[0]])
+        # Verify the optional archive separately after the default bundle has installed.
+        compose(profiles[0], 'exec', '-T', 'app', 'test', '!', '-e',
+                '/var/www/moodle/public/admin/tool/log/store/xapi')
+        run(['python3', ROOT/'scripts/install-plugins.py', '--env-file', profiles[0],
+             '--set', 'xapi-oidc'])
         login(28881, password)
         compose(profiles[0], 'exec', '-T', '--user', 'www-data', 'app',
                 'php', 'admin/cli/cron.php', '--keep-alive=0')

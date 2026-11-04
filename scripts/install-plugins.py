@@ -21,20 +21,30 @@ def bundle(selection):
     catalog = json.loads(CATALOG.read_text())
     if catalog['schema'] != 1 or catalog['moodle_version'] != '5.3.0':
         raise ValueError('Unsupported catalog schema or Moodle release')
-    chosen = [p for p in catalog['plugins'] if p['selection'] == 'supported']
+    catalog_key, archive_dir = {
+        'supported': ('plugins', 'archives'),
+        'xapi-oidc': ('optional_plugins', 'optional'),
+    }[selection]
+    chosen = [p for p in catalog.get(catalog_key, []) if p['selection'] == selection]
+    if not chosen:
+        raise ValueError('No plugins found for selection: ' + selection)
     versions = {p['component']: p['version'] for p in chosen}
     payload = io.BytesIO()
     with tarfile.open(fileobj=payload, mode='w') as out:
         for p in chosen:
             kind, name = p['component'].split('_', 1)
-            expected = {'block': 'blocks/', 'mod': 'mod/', 'tool': 'admin/tool/'}[kind] + name
+            prefixes = {'block': 'blocks/', 'mod': 'mod/', 'tool': 'admin/tool/',
+                        'logstore': 'admin/tool/log/store/'}
+            if kind not in prefixes:
+                raise ValueError('Invalid component type')
+            expected = prefixes[kind] + name
             if p['path'] != expected or not re.fullmatch(r'[a-z][a-z0-9_]*', name):
                 raise ValueError('Invalid component destination')
             for dep, version in p['dependencies'].items():
                 if versions.get(dep, 0) < version:
                     raise ValueError('Missing locked dependency')
             archive = ROOT / 'plugins' / p['archive']
-            if archive.parent != ROOT / 'plugins/archives':
+            if archive.parent != ROOT / 'plugins' / archive_dir:
                 raise ValueError('Invalid archive location')
             data = archive.read_bytes()
             if hashlib.sha256(data).hexdigest() != p['sha256']:
@@ -84,7 +94,7 @@ def run(args, data=None):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--env-file')
-    parser.add_argument('--set', choices=['supported'], default='supported')
+    parser.add_argument('--set', choices=['supported', 'xapi-oidc'], default='supported')
     parser.add_argument('--verify-only', action='store_true')
     parser.add_argument('--upgrade', action='store_true', help='Allow replacement of an intact previously managed plugin')
     args = parser.parse_args()

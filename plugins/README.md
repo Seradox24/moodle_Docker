@@ -42,6 +42,27 @@ publicar salidas sensibles, recuperar el respaldo completo en otro proyecto
 según el runbook y comprobarlo antes de cambiar el proxy. Si no comenzó ninguna
 migración, revisar la causa y el estado de mantenimiento antes de reintentar.
 
+## Logstore xAPI OIDC opcional
+
+[Logstore xAPI OIDC](https://github.com/Seradox24/moodle-logstore-xapi-oidc)
+`5.1.1-oidc.1` (beta, compilación `2026110300`) está en
+`optional/logstore_xapi-5.1.1-oidc.1.zip`. Su origen, versión y SHA-256
+están fijados en `optional_plugins` del catálogo. El instalador automático
+sigue seleccionando únicamente Certificate Studio y Completion Progress.
+
+Aplicar el mismo procedimiento de respaldo y ensayo que para el conjunto
+principal. La instalación es explícita y no habilita el logstore.
+
+```sh
+python3 scripts/install-plugins.py --set xapi-oidc --verify-only
+python3 scripts/install-plugins.py --env-file /ruta/privada/sitio.env --set xapi-oidc
+```
+
+Para activarlo, configurar primero la autenticación OIDC de Moodle, el issuer
+y cliente previstos y las credenciales del LRS, según la guía del repositorio
+del plugin. Para actualizar su ZIP, conservarlo en `optional/`, fijar los
+metadatos de la nueva revisión y usar `--set xapi-oidc --upgrade`.
+
 ## Actualizar mediante Git
 
 1. Seleccionar una release oficial compatible y revisar avisos de seguridad.

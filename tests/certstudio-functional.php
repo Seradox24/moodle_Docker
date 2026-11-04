@@ -76,6 +76,8 @@ try {
     echo 'Certificate PDF generated (' . strlen($pdf) . ' bytes, SHA-256 ' . hash('sha256', $pdf) . ")\n";
 
     // Exercise the progress block against a real course with a tracked activity.
+    // Register the region explicitly because this CLI fixture does not render a theme layout.
+    $PAGE->blocks->add_region('side-pre');
     $PAGE->blocks->add_block('completion_progress', 'side-pre', 0, false);
     $record = $DB->get_record('block_instances', [
         'blockname' => 'completion_progress', 'parentcontextid' => context_course::instance($courseid)->id,

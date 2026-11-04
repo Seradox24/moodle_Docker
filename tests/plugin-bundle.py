@@ -22,6 +22,12 @@ class BundleTests(unittest.TestCase):
         self.assertEqual(set((ROOT/'plugins/archives').glob('*.zip')),
                          {ROOT/'plugins'/p['archive'] for p in plugins})
 
+    def test_optional_xapi_distribution(self):
+        plugins, _ = module.bundle('xapi-oidc')
+        self.assertEqual([p['component'] for p in plugins], ['logstore_xapi'])
+        self.assertEqual(set((ROOT/'plugins/optional').glob('*.zip')),
+                         {ROOT/'plugins'/p['archive'] for p in plugins})
+
     def invalid(self, *, member=None, symlink=False, mutation=None):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

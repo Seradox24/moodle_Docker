@@ -31,5 +31,22 @@
       "declared_moodle": "4.5-5.3",
       "dependencies": {}
     }
+  ],
+  "optional_plugins": [
+    {
+      "component": "logstore_xapi",
+      "path": "admin/tool/log/store/xapi",
+      "version": 2026110300,
+      "archive": "optional/logstore_xapi-5.1.1-oidc.1.zip",
+      "sha256": "932a4ae30cf5533b3d2e7ecb645faa965a06c455ca88c3b991f82734eb4c951d",
+      "source": "https://github.com/Seradox24/moodle-logstore-xapi-oidc/releases/download/v5.1.1-oidc.1/logstore_xapi-5.1.1-oidc.1.zip",
+      "repository": "https://github.com/Seradox24/moodle-logstore-xapi-oidc",
+      "ref": "07b9ffed85e8c10fe62a929c69e04db019fb5fb2",
+      "tag": "v5.1.1-oidc.1",
+      "selection": "xapi-oidc",
+      "license": "GPL-3.0-or-later",
+      "declared_moodle": "4.5-5.3",
+      "dependencies": {}
+    }
   ]
 }
